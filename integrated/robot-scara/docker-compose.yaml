@@ -1,0 +1,30 @@
+version: '2'
+
+networks:
+  ros-network:
+    driver: bridge
+
+services:
+  
+  # ROBOT-SCARA
+  robot-scara:
+    image: melodic:robot-scara
+    build: 
+      context: ./robot-scara
+      dockerfile: Dockerfile
+    container_name: robot-scara
+    hostname: robot-scara
+    networks:
+      - ros-network
+    volumes:
+      - "/tmp/.X11-unix:/tmp/.X11-unix:rw"
+      - "./robot-scara/robot_scara:/root/catkin_ws/src/robot_scara"
+    environment:
+      - "ROS_HOSTNAME=robot-scara"
+      - "ROS_MASTER_URI=http://robot-scara:11311"
+      - "DISPLAY=$DISPLAY"
+      - "QT_X11_NO_MITSHM=1"
+    devices:
+      - /dev/dri:/dev/dri
+    command: bash -c "source /opt/ros/melodic/setup.bash && source /root/catkin_ws/devel/setup.bash && roslaunch robot_scara rviz_scara.launch"
+

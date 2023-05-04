@@ -1,0 +1,25 @@
+<?xml version="1.0" ?>
+
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:property name="link_00_name" value="base_link" />
+  <xacro:property name="link_01_name" value="link_01" />
+  <xacro:property name="link_02_name" value="link_02" />
+  <xacro:property name="link_03_name" value="link_03" />
+  <xacro:property name="link_04_name" value="link_04" />
+  <xacro:property name="link_05_name" value="link_05" />
+  <xacro:property name="link_06_name" value="link_06" />
+
+  <xacro:property name="pi" value="3.14159" />
+
+  <xacro:property name="l1" value="0.8" />
+	<xacro:property name="l2" value="0.6" />
+  <xacro:property name="l4" value="0.2" />
+
+  <xacro:property name="radio_default" value="0.05" />
+  <xacro:property name="radio_gripper" value="0.02" />
+  <xacro:property name="link_length_0" value="0.5" />
+  <xacro:property name="link_size_z_3" value="0.5" />
+  <xacro:property name="link_length_gripper" value="0.1" />
+
+</robot>

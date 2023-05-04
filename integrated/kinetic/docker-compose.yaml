@@ -1,0 +1,77 @@
+version: '2'
+
+networks:
+  ros-network:
+    driver: bridge
+
+services:
+  # ROSCORE
+  roscore:
+    image: osrf/ros:kinetic-desktop-full
+    container_name: roscore
+    hostname: roscore
+    command: roscore
+    networks:
+        - ros-network
+  
+  # ROS Tutorial Talker
+  talker: 
+    image: osrf/ros:kinetic-desktop-full
+    container_name: talker
+    hostname: talker
+    networks:
+        - ros-network
+    environment:
+        - "ROS_HOSTNAME=talker"
+        - "ROS_MASTER_URI=http://roscore:11311"    # Debe aparecer como se llame el servicio donde se lanza el roscore
+    # command: bash
+    command: rosrun rospy_tutorials talker
+
+  # ROS Tutorial Listener
+  listener: 
+    image: osrf/ros:kinetic-desktop-full
+    container_name: listener
+    hostname: listener
+    networks:
+        - ros-network
+    environment:
+        - "ROS_HOSTNAME=listener"
+        - "ROS_MASTER_URI=http://roscore:11311"
+    # command: bash
+    command: rosrun rospy_tutorials listener
+
+  # ROS RQT
+  rqt:
+    image: osrf/ros:kinetic-desktop-full
+    container_name: rqt
+    hostname: rqt
+    networks:
+        - ros-network
+    volumes:
+        - "/tmp/.X11-unix:/tmp/.X11-unix:rw"
+    environment:
+        - "ROS_HOSTNAME=rviz"
+        - "ROS_MASTER_URI=http://roscore:11311"
+        - "DISPLAY=$DISPLAY"
+        - "QT_X11_NO_MITSHM=1"
+    devices:
+        - /dev/dri:/dev/dri
+    command: rosrun rqt_graph rqt_graph
+
+  # ROS RVIZ
+  rviz:
+    image: osrf/ros:kinetic-desktop-full
+    container_name: rviz
+    hostname: rviz
+    networks:
+        - ros-network
+    volumes:
+        - "/tmp/.X11-unix:/tmp/.X11-unix:rw"
+    environment:
+        - "ROS_HOSTNAME=rviz"
+        - "ROS_MASTER_URI=http://roscore:11311"
+        - "DISPLAY=$DISPLAY"
+        - "QT_X11_NO_MITSHM=1"
+    devices:
+        - /dev/dri:/dev/dri
+    command: rosrun rviz rviz

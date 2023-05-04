@@ -1,0 +1,18 @@
+<launch>
+
+    <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find robot_scara)/urdf/robot_scara.urdf.xacro'"/>
+
+    <!-- Combine joint values -->
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
+        respawn="false" output="screen">
+    </node>
+    
+    <!-- Show in Rviz   -->
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find robot_scara)/launch/config.rviz"/>
+
+    <!-- send joint values -->
+    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+        <param name="use_gui" value="true"/>
+    </node>
+
+</launch>

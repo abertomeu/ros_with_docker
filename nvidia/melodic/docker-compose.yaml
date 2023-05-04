@@ -1,0 +1,115 @@
+version: '2'
+
+networks:
+  ros-network:
+    driver: bridge
+
+services:
+  # ROSCORE
+  roscore:
+    image: osrf/ros:melodic-desktop-full
+    container_name: roscore
+    hostname: roscore
+    command: roscore
+    networks:
+        - ros-network
+  
+  # ROS Tutorial Talker
+  talker: 
+    image: osrf/ros:melodic-desktop-full
+    container_name: talker
+    hostname: talker
+    networks:
+        - ros-network
+    environment:
+        - "ROS_HOSTNAME=talker"
+        - "ROS_MASTER_URI=http://roscore:11311"    # Debe aparecer como se llame el servicio donde se lanza el roscore
+    # command: bash
+    command: rosrun rospy_tutorials talker
+
+  # ROS Tutorial Listener
+  listener: 
+    image: osrf/ros:melodic-desktop-full
+    container_name: listener
+    hostname: listener
+    networks:
+        - ros-network
+    environment:
+        - "ROS_HOSTNAME=listener"
+        - "ROS_MASTER_URI=http://roscore:11311"
+    # command: bash
+    command: rosrun rospy_tutorials listener
+
+  # ROS RQT
+  rqt:
+    image: osrf/ros:melodic-desktop-full
+    container_name: rqt
+    hostname: rqt
+    networks:
+        - ros-network
+    volumes:
+        - "/tmp/.X11-unix:/tmp/.X11-unix:rw"
+    environment:
+        - "ROS_HOSTNAME=rviz"
+        - "ROS_MASTER_URI=http://roscore:11311"
+        - "NVIDIA_VISIBLE_DEVICES=all"
+        - "NVIDIA_DRIVER_CAPABILITIES=all"
+        - "DISPLAY=$DISPLAY"
+        - "QT_X11_NO_MITSHM=1"
+    command: rosrun rqt_graph rqt_graph
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+  # ROS RVIZ
+  rviz:
+    image: osrf/ros:melodic-desktop-full
+    container_name: rviz
+    hostname: rviz
+    networks:
+        - ros-network
+    volumes:
+        - "/tmp/.X11-unix:/tmp/.X11-unix:rw"
+    environment:
+        - "ROS_HOSTNAME=rviz"
+        - "ROS_MASTER_URI=http://roscore:11311"
+        - "NVIDIA_VISIBLE_DEVICES=all"
+        - "NVIDIA_DRIVER_CAPABILITIES=all"
+        - "DISPLAY=$DISPLAY"
+        - "QT_X11_NO_MITSHM=1"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    command: rosrun rviz rviz  
+
+  # GAZEBO
+  gazebo:
+    image: osrf/ros:melodic-desktop-full
+    container_name: gazebo
+    hostname: gazebo
+    networks:
+      - ros-network
+    volumes:
+      - "/tmp/.X11-unix:/tmp/.X11-unix:rw"
+    environment:
+        - "ROS_HOSTNAME=gazebo"
+        - "ROS_MASTER_URI=http://roscore:11311"
+        - "NVIDIA_VISIBLE_DEVICES=all"
+        - "NVIDIA_DRIVER_CAPABILITIES=all"
+        - "DISPLAY=$DISPLAY"
+        - "QT_X11_NO_MITSHM=1"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    command: roslaunch gazebo_ros empty_world.launch

@@ -1,0 +1,122 @@
+<?xml version="1.0" ?>
+
+<robot name="robot_scara" xmlns:xacro="http://www.ros.org/wiki/xacro">
+    
+    <xacro:include filename="$(find robot_scara)/urdf/robot_parameters.xacro" />
+    <xacro:include filename="$(find robot_scara)/urdf/links_joints.xacro" />
+
+
+    <m_link_box name="${link_00_name}"
+            origin_rpy="0 0 0" origin_xyz="0 0 0"
+            mass="1024"
+            ixx="170.667" ixy="0" ixz="0"
+            iyy="170.667" iyz="0"
+            izz="170.667"
+            size="${link_length_0} ${link_length_0} ${link_length_0}" />
+ 
+    <m_joint name="${link_00_name}__${link_01_name}" type="revolute"
+            axis_xyz="0 0 1"
+            origin_rpy="0 0 0" origin_xyz="0 0 ${link_length_0/2+radio_default}"
+            parent="${link_00_name}" child="${link_01_name}"
+            limit_e="1000" limit_l="-3.14" limit_u="3.14" limit_v="0.5" />
+
+    <m_link_cylinder name="${link_01_name}"
+            origin_rpy="0 ${pi/2} 0" origin_xyz="${l1/2} 0 0"
+            radius="${radio_default}" length="${l1}"
+            mass="1.5"
+            ixx="0.01185" ixy="0" ixz="0"
+            iyy="0.01185" iyz="0"
+            izz="0.0012" />
+ 
+    <m_joint name="${link_01_name}__${link_02_name}" type="revolute"
+            axis_xyz="0 0 1"
+            origin_rpy="0 0 0" origin_xyz="${l1} 0 ${radio_default}"
+            parent="${link_01_name}" child="${link_02_name}"
+            limit_e="1000" limit_l="-3.14" limit_u="3.14" limit_v="0.5" />
+
+    <m_link_cylinder name="${link_02_name}"
+            origin_rpy="0 ${pi/2} 0" origin_xyz="${l2/2} 0 0"
+            radius="${radio_default}" length="${l2}"
+            mass="1.5"
+            ixx="0.01185" ixy="0" ixz="0"
+            iyy="0.01185" iyz="0"
+            izz="0.0012" />
+    
+    <m_joint name="${link_02_name}__${link_03_name}" type="prismatic"
+            axis_xyz="0 0 1"
+            origin_rpy="${pi} 0 0" origin_xyz="${l2+radio_default/2} 0 0"
+            parent="${link_02_name}" child="${link_03_name}"
+            limit_e="1000" limit_l="-${link_size_z_3/2}" limit_u="${link_size_z_3/2}" limit_v="0.5" />
+
+    <m_link_box name="${link_03_name}"
+              origin_rpy="0 0 0" origin_xyz="0 0 0"
+              mass="2"
+              ixx="0.01185" ixy="0" ixz="0"
+              iyy="0.01185" iyz="0"
+              izz="0.01185"
+              size="${radio_default} ${radio_default} ${link_size_z_3}" />
+
+    <m_joint name="${link_03_name}__${link_04_name}" type="revolute"
+            axis_xyz="0 0 1"
+            origin_rpy="0 0 0" origin_xyz="0 0 ${link_size_z_3/2+radio_gripper}"
+            parent="${link_03_name}" child="${link_04_name}"
+            limit_e="1000" limit_l="-3.14" limit_u="3.14" limit_v="0.5" />
+
+    <m_link_cylinder name="${link_04_name}"
+              origin_rpy="${pi/2} 0 0" origin_xyz="0 0 0"
+              mass="0.4"
+              ixx="0.05" ixy="0" ixz="0"
+              iyy="0.002" iyz="0"
+              izz="0.05"
+              radius="${radio_gripper}" length="${l4}" />
+
+
+    <m_joint name="${link_04_name}__${link_05_name}" type="prismatic"
+           axis_xyz="0 1 0"
+           origin_rpy="0 0 0" origin_xyz="0 ${l4/2} 0"
+           parent="${link_04_name}" child="${link_05_name}"
+           limit_e="100" limit_l="-${l4/2}" limit_u="0.0" limit_v="0.5" />
+
+    <m_link_cylinder name="${link_05_name}"
+              origin_rpy="0 0 0" origin_xyz="0 0 ${link_length_gripper/2}"
+              mass="0.2"
+              ixx="0.02" ixy="0" ixz="0"
+              iyy="0.02" iyz="0"
+              izz="0.001"
+              radius="${radio_gripper}" length="${link_length_gripper}" />
+
+    <m_joint name="${link_04_name}__${link_06_name}" type="prismatic"
+           axis_xyz="0 1 0"
+           origin_rpy="0 0 0" origin_xyz="0 -${l4/2} 0"
+           parent="${link_04_name}" child="${link_06_name}"
+           limit_e="100" limit_l="0" limit_u="${l4/2}" limit_v="0.5" />
+
+    <m_link_cylinder name="${link_06_name}"
+              origin_rpy="0 0 0" origin_xyz="0 0 ${link_length_gripper/2}"
+              mass="0.2"
+              ixx="0.02" ixy="0" ixz="0"
+              iyy="0.02" iyz="0"
+              izz="0.001"
+              radius="${radio_gripper}" length="${link_length_gripper}" />
+
+    <gazebo reference="${link_00_name}">
+        <material>Gazebo/Gray</material>
+    </gazebo>
+    <gazebo reference="${link_01_name}">
+        <material>Gazebo/Black</material>
+    </gazebo>
+    <gazebo reference="${link_02_name}">
+        <material>Gazebo/Gray</material>
+    </gazebo>
+    <gazebo reference="${link_03_name}">
+        <material>Gazebo/Black</material>
+    </gazebo>
+    
+    <!-- Gazebo plugin for ROS Control -->
+    <gazebo>
+        <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+            <robotNamespace>/</robotNamespace>
+        </plugin>
+    </gazebo>
+
+</robot>
